@@ -1,8 +1,5 @@
-# AI-Based Recipe and Meal Planning App
+## AI-Based Recipe and Meal Planning App
 =====================================================
-
-## BSc of Honors in Software Engineering Graduation Project
---------------------------------------------------------
 
 ### By Fathalrhman Adam and Ekhlas Idress
 
