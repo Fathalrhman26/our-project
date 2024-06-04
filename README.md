@@ -1,7 +1,7 @@
 ## AI-Based Recipe and Meal Planning App
 =====================================================
 
-### By Fathalrhman Adam and Ekhlas Idress
+### By Fathalrhman Adam and Ekhlas Edress
 
 ## Introduction
 ---------------
