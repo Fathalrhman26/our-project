@@ -149,7 +149,7 @@ const ProfileSettings = () => {
             Save Settings
             
           </Button>
-          <Button variant="contained"  fullWidth component={Link} to="/"
+          <Button variant="contained" fullWidth  component={Link} to="/"
           
           sx={{ mt: 1}}>
            Back to Home

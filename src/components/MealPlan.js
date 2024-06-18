@@ -66,9 +66,9 @@ const MealPlan = ({ userPreferences }) => {
 
   return (
     <Container maxWidth="sm"> 
-     <h1 >AI Recipe & Meal Planning</h1>
+     
 
-      <Box sx={{ mt: 4, textAlign: 'center' }}>
+      <Box sx={{ mt: 2, textAlign: 'center' }}>
         <Typography variant="h4" gutterBottom> Today's Meal Plan</Typography>
        
         <Button variant="contained" color="primary" onClick={MealPlan} disabled={loading} >
