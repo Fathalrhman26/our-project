@@ -1,8 +1,9 @@
 body {
   margin: 0;
  font-family: 'Roboto','Helevtica','Arial',sans-serif;
- background-color: #f5f5f5;
+ background-color:white; 
 }
+
 
 .App {
     display: flex;

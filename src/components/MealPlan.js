@@ -1,4 +1,3 @@
-// src/GenerateMealPlan.js
 import React, { useState } from 'react';
 import { Container, Button, Typography, Box, CircularProgress } from '@mui/material';
 import { Link } from 'react-router-dom';
@@ -93,7 +92,7 @@ const MealPlan = ({ userPreferences }) => {
               </Box>
             
             ))}
-              <Button  variant="contained"  component={Link} to="/">
+              <Button  variant="contained"  component={Link} to="/home">
          Back to Home
         </Button>
           </Box>

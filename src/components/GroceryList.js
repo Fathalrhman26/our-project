@@ -57,7 +57,7 @@ const GroceryList = () => {
         >
           Add Item
         </Button>
-        <Button  variant="contained" fullWidth component={Link} to="/"
+        <Button  variant="contained" fullWidth component={Link} to="/home"
           
           sx={{ mt: 1}}>
          Back to Home
