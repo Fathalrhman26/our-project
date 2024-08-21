@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Container, TextField, Button, Typography, Box, FormGroup, FormControlLabel, Checkbox, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const initialProfile = {
   name: 'Ali',
@@ -23,6 +22,7 @@ const initialProfile = {
 
 const ProfileSettings = () => {
   const [profile, setProfile] = useState(initialProfile);
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -65,6 +65,7 @@ const ProfileSettings = () => {
     event.preventDefault();
     // Here you would typically send the updated profile to your server
     console.log('Profile updated:', profile);
+    navigate('/'); // Navigate back to the home page after saving
   };
 
   return (
@@ -103,7 +104,6 @@ const ProfileSettings = () => {
               control={<Checkbox checked={profile.dietaryPreferences.glutenFree} onChange={handleDietaryChange} name="glutenFree" />}
               label="Gluten-Free"
             />
-              
           </FormGroup>
 
           <Typography variant="h6" gutterBottom sx={{ mt: 0 }}>Allergies</Typography>
@@ -112,7 +112,6 @@ const ProfileSettings = () => {
               control={<Checkbox checked={profile.allergies.peanuts} onChange={handleAllergyChange} name="peanuts" />}
               label="Peanuts"
             />
-           
             <FormControlLabel
               control={<Checkbox checked={profile.allergies.lactose} onChange={handleAllergyChange} name="lactose" />}
               label="Lactose"
@@ -144,19 +143,20 @@ const ProfileSettings = () => {
             color="primary"
             type="submit"
             fullWidth
-            sx={{ mt: 1}}
+            sx={{ mt: 1 }}
+            onClick={() => navigate('/profile-setting')}
           >
             Save Settings
-            
           </Button>
-          <Button variant="contained" fullWidth  component={Link} to="/"
-          
-          sx={{ mt: 1}}>
-           Back to Home
-           </Button>
-          
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{ mt: 1 }}
+            onClick={() => navigate('/home')}
+          >
+            Back to Home
+          </Button>
         </form>
-       
       </Box>
     </Container>
   );

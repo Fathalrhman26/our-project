@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Container, Typography, Box,Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import SearchRecipes from './SearchRecipes'; 
-import Home from './Home'
+// import Home from './Home/Home';
 
 const MyRecipes = ({ addRecipeToPlan, swapMealInPlan }) => {
   const [recipes] = useState([

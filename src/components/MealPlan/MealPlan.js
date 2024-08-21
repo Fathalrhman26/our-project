@@ -71,7 +71,7 @@ const MealPlan = ({ userPreferences }) => {
         <Typography variant="h4" gutterBottom> Today's Meal Plan</Typography>
        
         <Button variant="contained" color="primary" onClick={MealPlan} disabled={loading} >
-          {loading ? <CircularProgress size={24} /> : ' Meal Plan'}
+          {loading ? <CircularProgress size={24} /> : 'Meal Plan'}
          
         </Button>
         {mealPlan && (
