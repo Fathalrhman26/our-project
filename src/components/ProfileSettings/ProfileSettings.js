@@ -1,30 +1,36 @@
+// src/components/ProfileSettings/ProfileSettings.js
 import React, { useState } from 'react';
-import { Container, TextField, Button, Typography, Box, FormGroup, FormControlLabel, Checkbox, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { TextField, Button, Typography, FormControl, Select, MenuItem, InputLabel, Avatar, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useTranslation } from 'react-i18next';
+import { 
+  StyledBackButton, 
+  StyledBox, 
+  StyledAvatar, 
+  StyledButton, 
+  StyledFormControl, 
+  StyledSubmitButton 
+} from '../../styles/globalStyles'; // Adjust the path as needed
 
 const initialProfile = {
   name: 'Ali',
   email: 'Ali@example.com',
-  dietaryPreferences: {
-    vegetarian: false,
-    vegan: false,
-    glutenFree: false,
-    dairyFree: false,
-  },
-  allergies: {
-    peanuts: false,
-    shellfish: false,
-    lactose: false,
-    gluten: false,
-  },
-  healthGoal: '',
+  dietaryPreferences: 'Vegetarian',
+  preferredCuisines: 'Italian, Asian',
+  dislikedIngredients: 'Cilantro, Mushrooms',
+  allergies: 'Lactose',
+  healthGoal: 'Weight Loss',
+  profilePicture: 'path/to/profile/picture.jpg', // Replace with actual image path
 };
 
 const ProfileSettings = () => {
   const [profile, setProfile] = useState(initialProfile);
+  const [editMode, setEditMode] = useState(false);
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
-  const handleChange = (event) => {
+  const handleInputChange = (event) => {
     const { name, value } = event.target;
     setProfile({
       ...profile,
@@ -32,134 +38,70 @@ const ProfileSettings = () => {
     });
   };
 
-  const handleDietaryChange = (event) => {
-    const { name, checked } = event.target;
+  const handleProfilePictureChange = (event) => {
+    const file = event.target.files[0];
+    // Handle file upload logic here, e.g., upload to a server
     setProfile({
       ...profile,
-      dietaryPreferences: {
-        ...profile.dietaryPreferences,
-        [name]: checked,
-      },
+      profilePicture: URL.createObjectURL(file),
     });
   };
 
-  const handleAllergyChange = (event) => {
-    const { name, checked } = event.target;
-    setProfile({
-      ...profile,
-      allergies: {
-        ...profile.allergies,
-        [name]: checked,
-      },
-    });
-  };
-
-  const handleHealthGoalChange = (event) => {
-    setProfile({
-      ...profile,
-      healthGoal: event.target.value,
-    });
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Here you would typically send the updated profile to your server
-    console.log('Profile updated:', profile);
-    navigate('/'); // Navigate back to the home page after saving
+  const toggleEditMode = () => {
+    if (editMode) {
+      // Here you would typically send the updated profile to your server
+      console.log('Profile updated:', profile);
+      // Navigate back to home or any related page
+      navigate('/');
+    }
+    setEditMode(!editMode);
   };
 
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ mt: 2, textAlign: 'center' }}>
-        <Typography variant="h4" gutterBottom>Profile Settings</Typography>
-        <form onSubmit={handleSubmit}>
+    <StyledBox>
+      <StyledBackButton
+        as={IconButton}
+        onClick={() => navigate('/home')}
+        language={i18n.language} // Pass the language to position the arrow
+      >
+        <ArrowBackIcon />
+      </StyledBackButton>
+        <Typography variant="h4" gutterBottom>User Profile & Settings</Typography>
+        <StyledAvatar as={Avatar} alt="Profile Picture" src={profile.profilePicture} />
+        {editMode && (
+          <StyledButton as={Button} variant="contained" component="label">
+            {t('Change Picture')}
+            <input type="file" hidden onChange={handleProfilePictureChange} />
+          </StyledButton>
+        )}
+        <form>
           <TextField
-            label="Name"
+            label={t('Name')}
             fullWidth
             margin="normal"
             name="name"
             value={profile.name}
-            onChange={handleChange}
+            onChange={handleInputChange}
+            InputProps={{
+              readOnly: !editMode,
+            }}
           />
           <TextField
-            label="Email"
-            fullWidth
-            margin="normal"
-            name="email"
-            value={profile.email}
-            onChange={handleChange}
-          />
-          
-          <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>Dietary Preferences</Typography>
-          <FormGroup>
-            <FormControlLabel
-              control={<Checkbox checked={profile.dietaryPreferences.vegetarian} onChange={handleDietaryChange} name="vegetarian" />}
-              label="Vegetarian"
-            />
-            <FormControlLabel
-              control={<Checkbox checked={profile.dietaryPreferences.vegan} onChange={handleDietaryChange} name="vegan" />}
-              label="Vegan"
-            />
-            <FormControlLabel
-              control={<Checkbox checked={profile.dietaryPreferences.glutenFree} onChange={handleDietaryChange} name="glutenFree" />}
-              label="Gluten-Free"
-            />
-          </FormGroup>
-
-          <Typography variant="h6" gutterBottom sx={{ mt: 0 }}>Allergies</Typography>
-          <FormGroup>
-            <FormControlLabel
-              control={<Checkbox checked={profile.allergies.peanuts} onChange={handleAllergyChange} name="peanuts" />}
-              label="Peanuts"
-            />
-            <FormControlLabel
-              control={<Checkbox checked={profile.allergies.lactose} onChange={handleAllergyChange} name="lactose" />}
-              label="Lactose"
-            />
-            <FormControlLabel
-              control={<Checkbox checked={profile.allergies.gluten} onChange={handleAllergyChange} name="gluten" />}
-              label="Gluten"
-            />
-          </FormGroup>
-
-          <Typography variant="h6" gutterBottom sx={{ mt: 0 }}>Health Goals</Typography>
-          <FormControl fullWidth margin="normal">
-            <InputLabel id="health-goal-label">Health Goal</InputLabel>
-            <Select
-              labelId="health-goal-label"
-              value={profile.healthGoal}
-              onChange={handleHealthGoalChange}
-              label="Health Goal"
-            >
-              <MenuItem value="weightLoss">Weight Loss</MenuItem>
-              <MenuItem value="muscleGain">Muscle Gain</MenuItem>
-              <MenuItem value="maintain">Maintain Weight</MenuItem>
-              <MenuItem value="improveFitness">Improve Fitness</MenuItem>
-            </Select>
-          </FormControl>
-
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            fullWidth
-            sx={{ mt: 1 }}
-            onClick={() => navigate('/profile-setting')}
-          >
-            Save Settings
-          </Button>
-          <Button
-            variant="contained"
-            fullWidth
-            sx={{ mt: 1 }}
-            onClick={() => navigate('/home')}
-          >
-            Back to Home
-          </Button>
-        </form>
-      </Box>
-    </Container>
-  );
-};
-
-export default ProfileSettings;
+            label={t('Email')} fullWidth margin="normal" name="email" value={profile.email} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 
+            <TextField label={t('Dietary Preferences')} fullWidth margin="normal" name="dietaryPreferences" value={profile.dietaryPreferences} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 
+            <TextField label={t('Preferred Cuisines')} fullWidth margin="normal" name="preferredCuisines" value={profile.preferredCuisines} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 
+            <TextField label={t('Disliked Ingredients')} fullWidth margin="normal" name="dislikedIngredients" value={profile.dislikedIngredients} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 
+            <TextField label={t('Allergies')} fullWidth margin="normal" name="allergies" value={profile.allergies} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 
+            <StyledFormControl as={FormControl} fullWidth> 
+              <InputLabel id="health-goal-label">{t('Health Goal')}</InputLabel> 
+              <Select labelId="health-goal-label" name="healthGoal" value={profile.healthGoal} onChange={handleInputChange} disabled={!editMode} > 
+                <MenuItem value="Weight Loss">{t('Weight Loss')}</MenuItem> 
+                <MenuItem value="Maintain Weight">{t('Maintain Weight')}</MenuItem> 
+                <MenuItem value="Build Muscle">{t('Build Muscle')}</MenuItem> 
+                <MenuItem value="Increase Stamina">{t('Increase Stamina')}</MenuItem> 
+              </Select> 
+            </StyledFormControl> 
+            <StyledSubmitButton as={Button} variant="contained" color="primary" fullWidth onClick={toggleEditMode}> {editMode ? t('Save Settings') : t('Edit Profile')} </StyledSubmitButton> 
+        </form> 
+      </StyledBox>  ); };
+    export default ProfileSettings;

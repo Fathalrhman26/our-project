@@ -6,7 +6,7 @@ import MealPlanPage from './pages/MealPlanPage';
 import MyRecipesPage from './pages/MyRecipesPage';
 import ProfileSettingsPage from './pages/ProfileSettingsPage';
 import GroceryListPage from './pages/GroceryListPage';
-import TutorialsPage from './pages/TutorialsPage';
+import OnboardingTutorialsPage from './pages/OnboardingTutorialsPage';
 
 const Routes = () => {
   return (
@@ -17,7 +17,7 @@ const Routes = () => {
       <Route path="/my-recipes" component={MyRecipesPage} />
       <Route path="/profile-settings" component={ProfileSettingsPage} />
       <Route path="/grocery-list" component={GroceryListPage} />
-      <Route path="/tutorials" component={TutorialsPage} />
+      <Route path="/onboarding-tutorials" component={OnboardingTutorialsPage} />
       <Route path="/" exact component={HomePage} />
     </Switch>
   );

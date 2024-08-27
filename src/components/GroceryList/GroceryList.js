@@ -1,88 +1,64 @@
-// src/ShoppingList.js
-import React, { useState } from 'react';
-import { Container, Typography, Box, List, ListItem, ListItemText, ListItemSecondaryAction, IconButton, Checkbox, Button, TextField } from '@mui/material';
-import { Delete as DeleteIcon } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
-          
-          
-const initialItems = [
-  { id: 1, name: 'Apples' },
-  { id: 2, name: 'Bread' },
-  { id: 3, name: 'Milk' },
-];
+import React, { useState, useEffect } from 'react';
+import { TextField, List, ListItem, ListItemText, IconButton, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { StyledBox, StyledAddButton, StyledBackButton } from '../../styles/globalStyles'; // Import styles
 
-const GroceryList = () => {
-  const [items, setItems] = useState(initialItems);
+const GroceryList = ({ mealPlanItems, onBack }) => {
+  const navigate = useNavigate();
+  const [groceryItems, setGroceryItems] = useState([]);
   const [newItem, setNewItem] = useState('');
 
-  const handleToggle = (itemId) => {
-    setItems(items.map(item =>
-      item.id === itemId ? { ...item, checked: !item.checked } : item
-    ));
-  };
-
-  const handleDelete = (itemId) => {
-    setItems(items.filter(item => item.id !== itemId));
-  };
+  // Automatically add items from MealPlan.js
+  useEffect(() => {
+    if (mealPlanItems && mealPlanItems.length > 0) {
+      setGroceryItems(prevItems => [...prevItems, ...mealPlanItems]);
+    }
+  }, [mealPlanItems]);
 
   const handleAddItem = () => {
     if (newItem.trim()) {
-      const newItemObject = {
-        id: items.length ? items[items.length - 1].id + 1 : 1,
-        name: newItem,
-        checked: false,
-      };
-      setItems([...items, newItemObject]);
+      setGroceryItems([...groceryItems, newItem]);
       setNewItem('');
     }
   };
 
+  const handleRemoveItem = (index) => {
+    setGroceryItems(groceryItems.filter((_, i) => i !== index));
+  };
+
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ mt: 4, textAlign: 'center' }}>
-        <Typography variant="h4" gutterBottom>Grocery List</Typography>
-        <TextField
-          label="New Item"
-          fullWidth
-          margin="normal"
-          value={newItem}
-          onChange={(e) => setNewItem(e.target.value)}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          sx={{ mt: 2 }}
-          onClick={handleAddItem}
-        >
-          Add Item
-        </Button>
-        <Button  variant="contained" fullWidth component={Link} to="/home"
-          
-          sx={{ mt: 1}}>
-         Back to Home
-        </Button>
-        <List sx={{ mt: 4 }}>
-          {items.map(item => (
-            <ListItem key={item.id} button>
-              <Checkbox
-                edge="start"
-                checked={item.checked || false}
-                tabIndex={-1}
-                disableRipple
-                onClick={() => handleToggle(item.id)}
-              />
-              <ListItemText primary={item.name} />
-              <ListItemSecondaryAction>
-                <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(item.id)}>
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-    </Container>
+    <StyledBox>
+      <StyledBackButton onClick={() => navigate('/home')}>
+        <ArrowBackIcon />
+      </StyledBackButton>
+      <Typography variant="h5" gutterBottom>
+        Grocery List
+      </Typography>
+      <TextField
+        label="Add New Item"
+        value={newItem}
+        onChange={(e) => setNewItem(e.target.value)}
+        variant="outlined"
+        fullWidth
+        margin="normal"
+      />
+      <StyledAddButton onClick={handleAddItem}>
+        Add Item
+      </StyledAddButton>
+      <List>
+        {groceryItems.map((item, index) => (
+          <ListItem key={index}>
+            <ListItemText primary={item} />
+            <IconButton edge="end" onClick={() => handleRemoveItem(index)}>
+              <Typography variant="body2" color="error">
+                Remove
+              </Typography>
+            </IconButton>
+          </ListItem>
+        ))}
+      </List>
+    </StyledBox>
   );
 };
 

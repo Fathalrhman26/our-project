@@ -1,8 +1,9 @@
+// src/components/Home/Home.js
 import React from 'react';
-import { Button, Container, Box, Typography, AppBar, Toolbar, Stack, Avatar } from '@mui/material';
+import { Button, Container, Typography, AppBar, Box, Toolbar, Stack } from '@mui/material';
 import { Fastfood, ShoppingCart, EventNote } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
-import { deepOrange } from '@mui/material/colors';
+import { StyledAvatar, StyledProfileAvatar, StyledHomeBox, StyledLogo } from '../../styles/globalStyles'; // Adjusted import
 import useCurrentTime from '../../hooks/useCurrentTime';
 
 const Home = ({ username }) => {
@@ -22,23 +23,24 @@ const Home = ({ username }) => {
   return (
     <Container maxWidth="sm">
       <AppBar position="static">
-        <Toolbar sx={{ alignItems: 'center' ,alignContent:'center', justifyContent: 'center' }}>
+        <Toolbar sx={{ alignItems: 'center', justifyContent: 'center' }}>
+          <StyledLogo src="path/to/logo.png" alt="App Logo" language={navigator.language} />
           <Typography>AI Recipe & Meal Planning</Typography>
         </Toolbar>
       </AppBar>
-      <Box sx={{ textAlign: 'center', mt: 4 }}>
+      <StyledHomeBox>
         <Stack direction="column" spacing={2} justifyContent="center" ml={62} mt={4}>
-          <Avatar sx={{ bgcolor: deepOrange[500], width: 50, height: 50 }} component={Link} to="/profile-setting">
+          <StyledProfileAvatar component={Link} to="/profile-setting">
             A
-          </Avatar>
+          </StyledProfileAvatar>
         </Stack>
         <Stack direction="row" spacing={4} justifyContent="center" alignItems="center" mt={5}>
-          <Avatar src="/broken-image.jpg" sx={{ width: 150, height: 150 }} />
+          <StyledAvatar src="/broken-image.jpg" />
         </Stack>
         <Typography variant="h4" component="h1" gutterBottom>
           {getCurrentGreeting()}, {username}!
         </Typography>
-      </Box>
+      </StyledHomeBox>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, alignItems: 'center', boxShadow: 4, borderRadius: 8 }}>
         <p>
         <Button variant="contained" startIcon={<EventNote />} component={Link} to="/meal-plan" sx={{ borderRadius: 10, mr: 3, py: 2 }}>
