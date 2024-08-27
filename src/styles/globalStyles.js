@@ -134,3 +134,34 @@ export const StyledIconButton = styled('div')(({ theme }) => ({
   top: theme.spacing(2),
   left: theme.spacing(2),
 }));
+
+
+
+// Tutorials Component Styles
+
+// Container for the Tutorials box, centered with padding and a shadow.
+export const StyledTutorialBox = styled(Box)(({ theme }) => ({
+  maxWidth: theme.breakpoints.values.md,
+  margin: 'auto',
+  padding: theme.spacing(3),
+  boxShadow: theme.shadows[4],
+  backgroundColor: theme.palette.background.paper,
+  borderRadius: theme.shape.borderRadius,
+  textAlign: 'center',
+  position: 'relative',  // For absolute positioning of the back button
+}));
+
+// Box for the search input and button, styled for layout consistency.
+export const StyledSearchBox = styled(Box)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(2),
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+}));
+
+// List to display tutorials in the Tutorials component.
+export const StyledTutorialList = styled(List)(({ theme }) => ({
+  marginTop: theme.spacing(2),
+}));
+
