@@ -1,11 +1,13 @@
-// src/MyRecipes.js
 import React, { useState } from 'react';
-import { Container, Typography, Box,Button } from '@mui/material';
-import { Link } from 'react-router-dom';
-import SearchRecipes from './SearchRecipes'; 
-import Home from './Home'
+import { Container, Typography, Box} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useNavigate } from 'react-router-dom';
+import SearchRecipes from './SearchRecipes';
+import RecipeCard from './RecipeCard'; // Assuming you create a RecipeCard component for displaying individual recipes
+import { StyledBox, StyledBackButton } from '../../styles/globalStyles'; // Assuming globalStyles.js is in the ../styles/ directory
 
 const MyRecipes = ({ addRecipeToPlan, swapMealInPlan }) => {
+  const navigate = useNavigate();
   const [recipes] = useState([
     {
       id: 1,
@@ -41,7 +43,7 @@ const MyRecipes = ({ addRecipeToPlan, swapMealInPlan }) => {
     let filtered = recipes;
 
     if (values.keywords) {
-      filtered = filtered.filter(recipe => 
+      filtered = filtered.filter(recipe =>
         recipe.name.toLowerCase().includes(values.keywords.toLowerCase()) ||
         recipe.ingredients.some(ingredient => ingredient.toLowerCase().includes(values.keywords.toLowerCase()))
       );
@@ -58,16 +60,18 @@ const MyRecipes = ({ addRecipeToPlan, swapMealInPlan }) => {
 
   return (
     <Container maxWidth="md">
-      <Box sx={{ mt: 4 }}>
+      <StyledBox>
+        <StyledBackButton onClick={() => navigate('/home')}>
+          <ArrowBackIcon />
+        </StyledBackButton>
         <Typography variant="h4" gutterBottom>My Recipes</Typography>
         <SearchRecipes onSearch={handleSearch} />
-      
-      </Box>
-      <Button  variant="contained"  component={Link} to="/home"
-          
-          sx={{ mt: 1}}>
-         Back to Home
-        </Button>
+      </StyledBox>
+        <Box sx={{ mt: 4 }}>
+          {filteredRecipes.map(recipe => (
+            <RecipeCard key={recipe.id} recipe={recipe} addRecipeToPlan={addRecipeToPlan} swapMealInPlan={swapMealInPlan} />
+          ))}
+        </Box>
     </Container>
   );
 };
