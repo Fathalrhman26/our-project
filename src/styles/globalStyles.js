@@ -33,7 +33,7 @@ export const StyledFormControl = styled('div')(({ theme }) => ({
 }));
 
 // Submit button for saving or editing the profile in Profile Settings.
-export const StyledSubmitButton = styled('div')(({ theme }) => ({
+export const StyledSubmitButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(2),
 }));
 
@@ -58,16 +58,10 @@ export const StyledProfileAvatar = styled(Avatar)(({ theme }) => ({
 
 // Box for structuring content in the Home component.
 export const StyledHomeBox = styled(Box)(({ theme }) => ({
-  maxWidth: theme.breakpoints.values.sm,
-  textAlign: 'center',
-  margin: 'auto',
-  padding: theme.spacing(3),
-  boxShadow: theme.shadows[4],
-  backgroundColor: theme.palette.background.paper,
-  borderRadius: theme.shape.borderRadius,
+  marginTop: theme.spacing(2),
+  marginBottom: theme.spacing(2),
   display: 'flex',
   flexDirection: 'column',
-  gap: theme.spacing(2),
   alignItems: 'center',
 }));
 
@@ -75,7 +69,7 @@ export const StyledHomeBox = styled(Box)(({ theme }) => ({
 
 // Container for the recipe search section.
 export const StyledBox = styled(Box)(({ theme }) => ({
-  maxWidth: theme.breakpoints.values.sm,
+  maxWidth: theme.breakpoints.values.lg,
   textAlign: 'center',
   margin: 'auto',
   padding: theme.spacing(3),
@@ -139,17 +133,6 @@ export const StyledIconButton = styled('div')(({ theme }) => ({
 
 // Tutorials Component Styles
 
-// Container for the Tutorials box, centered with padding and a shadow.
-export const StyledTutorialBox = styled(Box)(({ theme }) => ({
-  maxWidth: theme.breakpoints.values.md,
-  margin: 'auto',
-  padding: theme.spacing(3),
-  boxShadow: theme.shadows[4],
-  backgroundColor: theme.palette.background.paper,
-  borderRadius: theme.shape.borderRadius,
-  textAlign: 'center',
-  position: 'relative',  // For absolute positioning of the back button
-}));
 
 // Box for the search input and button, styled for layout consistency.
 export const StyledSearchBox = styled(Box)(({ theme }) => ({

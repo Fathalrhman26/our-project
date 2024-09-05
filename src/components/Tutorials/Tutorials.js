@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Box, TextField, Button, List, ListItem, ListItemText, IconButton } from '@mui/material';
+import { Typography, TextField, Button, ListItem, ListItemText} from '@mui/material';
 import { ArrowBack as ArrowBackIcon } from '@mui/icons-material';
-import { StyledTutorialBox, StyledSearchBox, StyledTutorialList, StyledIconButton } from '../styles/globalStyles';
+import { useNavigate } from 'react-router-dom';
+import { StyledBox, StyledSearchBox, StyledTutorialList, StyledBackButton } from '../../styles/globalStyles';
 
 const Tutorials = ({ selectedMealPlan, onBack }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [tutorials, setTutorials] = useState([]);
+  const navigate = useNavigate();
 
   // Load tutorials for the selected meal plan on initial load
   useEffect(() => {
@@ -41,10 +43,10 @@ const Tutorials = ({ selectedMealPlan, onBack }) => {
   };
 
   return (
-    <StyledTutorialBox>
-      <StyledIconButton onClick={onBack}>
+    <StyledBox>
+      <StyledBackButton onClick={() => navigate('/home')}>
         <ArrowBackIcon />
-      </StyledIconButton>
+      </StyledBackButton>
       <Typography variant="h4" gutterBottom>
         Meal Tutorials
       </Typography>
@@ -75,7 +77,7 @@ const Tutorials = ({ selectedMealPlan, onBack }) => {
           </ListItem>
         ))}
       </StyledTutorialList>
-    </StyledTutorialBox>
+    </StyledBox>
   );
 };
 

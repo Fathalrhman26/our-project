@@ -6,6 +6,7 @@ import ProfileSettings from './components/ProfileSettings/ProfileSettings';
 import MyRecipes from './components/MyRecipes/MyRecipes';
 import GroceryList from './components/GroceryList/GroceryList';
 import MealPlan from './components/MealPlan/MealPlan';
+import Tutorials from './components/Tutorials/Tutorials';
 import Auth from "./components/Auth/Auth";
 
 function App (){
@@ -22,7 +23,7 @@ function App (){
         <Route path="/my-recipes" element={<MyRecipes />} />
         <Route path="/grocery-list" element={<GroceryList />} />
         <Route path="/meal-plan" element={<MealPlan />} />
-       
+        <Route path="/tutorials" element={<Tutorials />} />
         
       </Routes>
       </Router>

@@ -1,6 +1,6 @@
 // src/components/ProfileSettings/ProfileSettings.js
 import React, { useState } from 'react';
-import { TextField, Button, Typography, FormControl, Select, MenuItem, InputLabel, Avatar, IconButton } from '@mui/material';
+import { TextField, Button, Typography, FormControl, Select, MenuItem, InputLabel, Avatar} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useTranslation } from 'react-i18next';
@@ -28,7 +28,7 @@ const ProfileSettings = () => {
   const [profile, setProfile] = useState(initialProfile);
   const [editMode, setEditMode] = useState(false);
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation();
+  const { t} = useTranslation();
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -59,11 +59,7 @@ const ProfileSettings = () => {
 
   return (
     <StyledBox>
-      <StyledBackButton
-        as={IconButton}
-        onClick={() => navigate('/home')}
-        language={i18n.language} // Pass the language to position the arrow
-      >
+      <StyledBackButton onClick={() => navigate('/home')}>
         <ArrowBackIcon />
       </StyledBackButton>
         <Typography variant="h4" gutterBottom>User Profile & Settings</Typography>
