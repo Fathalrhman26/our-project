@@ -69,7 +69,7 @@ export const StyledHomeBox = styled(Box)(({ theme }) => ({
 
 // Container for the recipe search section.
 export const StyledBox = styled(Box)(({ theme }) => ({
-  maxWidth: theme.breakpoints.values.lg,
+  maxWidth: theme.breakpoints.values.md,
   textAlign: 'center',
   margin: 'auto',
   padding: theme.spacing(3),
@@ -111,7 +111,7 @@ export const StyledMealList = styled(List)(({ theme }) => ({
 }));
 
 // Individual ListItem in the Meal Plan, styled to highlight when selected.
-export const StyledMealListItem = styled(ListItem)(({ theme, selected }) => ({
+export const StyledMealListItem = styled(ListItem)(({ theme }) => ({
   padding: theme.spacing(2),
   marginBottom: theme.spacing(1),
   borderRadius: theme.shape.borderRadius,
@@ -130,9 +130,7 @@ export const StyledIconButton = styled('div')(({ theme }) => ({
 }));
 
 
-
 // Tutorials Component Styles
-
 
 // Box for the search input and button, styled for layout consistency.
 export const StyledSearchBox = styled(Box)(({ theme }) => ({
