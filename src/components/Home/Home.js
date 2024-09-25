@@ -44,7 +44,7 @@ const Home = ({ username }) => {
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, alignItems: 'center', boxShadow: 4, borderRadius: 8 }}>
         <p>
         <Button variant="contained" startIcon={<EventNote />} component={Link} to="/meal-plan" sx={{ borderRadius: 10, mr: 3, py: 2 }}>
-          Today's MealPlan
+          MealPlan Dashboard
         </Button>
         <Button variant="contained" startIcon={<Fastfood />} component={Link} to="/my-recipes" sx={{ borderRadius: 10, mr: 3, py: 2 }}>
           My Recipes

@@ -1,7 +1,8 @@
 // src/styles/globalStyles.js
 import { styled } from '@mui/material/styles';
 import { deepOrange } from '@mui/material/colors';
-import { Box, Avatar, Button, IconButton, List, ListItem } from '@mui/material';
+import { Box, Avatar, Button ,IconButton, List, ListItem } from '@mui/material';
+import selected from '@emotion/styled';
 
 // ProfileSettings Component Styles
 

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, Alert } from '@mui/material';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
   const [username, setUsername] = useState('');
@@ -7,8 +9,10 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState(null);
+  const navigate = useNavigate(); 
+  
 
-  const handleSignUp = (event) => {
+  /*const handleSignUp = (event) => {
     event.preventDefault();
 
     // Basic validation
@@ -20,11 +24,51 @@ const SignUp = () => {
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       return;
-    }
+    }*/
 
     // Placeholder for actual sign-up logic (e.g., API call)
-    setError(null);
-    console.log('Signing up with:', { username, email, password });
+    //setError(null);
+    //console.log('Signing up with:', { username, email, password });
+   const handleSignUp= async (e)=>{
+      e.preventDefault();
+
+     // Basic validation
+    if (!username || !email || !password || !confirmPassword) {
+      setError('Please fill in all fields.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+     // const response = await axios.post('http://localhost:3000/api/auth/register',{username,email,password});
+       // setError(response.data.error);
+      try{
+        const response = await axios.post('http://localhost:5000/api/auth/register',{username,email,password},
+      {
+        headers:{
+          'Content-Type':'application/json'
+        }
+      }
+      );
+        setError(response.data.error);
+       
+        
+      }catch(error){
+        setError('Registeration faild.Please try again');
+      }
+    
+       // Simulate successful sign-in
+    const isSuccess = true; // Replace with actual success check
+
+    if (isSuccess) {
+      navigate('/home'); // Navigate to the home page after successful sign-in
+    } else {
+      setError('Invalid email or password.');
+
+    }
+      
   };
 
   return (

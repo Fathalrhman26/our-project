@@ -1,5 +1,5 @@
 // src/components/ProfileSettings/ProfileSettings.js
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { TextField, Button, Typography, FormControl, Select, MenuItem, InputLabel, Avatar} from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -12,10 +12,14 @@ import {
   StyledFormControl, 
   StyledSubmitButton 
 } from '../../styles/globalStyles'; // Adjust the path as needed
+import axios from 'axios';
 
 const initialProfile = {
   name: 'Ali',
   email: 'Ali@example.com',
+  age:30,
+  currentWeight:80,
+  height:150,
   dietaryPreferences: 'Vegetarian',
   preferredCuisines: 'Italian, Asian',
   dislikedIngredients: 'Cilantro, Mushrooms',
@@ -29,27 +33,69 @@ const ProfileSettings = () => {
   const [editMode, setEditMode] = useState(false);
   const navigate = useNavigate();
   const { t} = useTranslation();
+  const [error, setError] = useState(null);
+  //const [dataProfile,setDataProfile] = useState({username,email, dietaryPreferences, preferredCuisines,allergies,healthGoals});
+ 
+
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+   
     setProfile({
       ...profile,
       [name]: value,
     });
   };
+   //load the user profile
+   useEffect(()=>{
+    const loadProfile = async()=>{
+     try{
+     
+       const response = await axios.get('http://localhost:5000/api/user/profile',
+     
+     );
+       setError(response.data.error);
+      
+       
+     }catch(error){
+       setError('loadProfile faild.Please try again');
+     }
+
+    };
+    loadProfile();
+ },[]);
 
   const handleProfilePictureChange = (event) => {
     const file = event.target.files[0];
-    // Handle file upload logic here, e.g., upload to a server
+   
+    
+    // Handle file upload logic here, e.g., upload to a 
+    
     setProfile({
       ...profile,
       profilePicture: URL.createObjectURL(file),
     });
   };
+ 
 
-  const toggleEditMode = () => {
+  const toggleEditMode = async() => {
+   
+  
     if (editMode) {
       // Here you would typically send the updated profile to your server
+      try{
+      
+        const response = await axios.put('http://localhost:5000/api/user/profile',profile,
+      
+      );
+        setError(response.data.error);
+       
+        
+      }catch(error){
+        setError('update faild.Please try again');
+      }
+    
+     
       console.log('Profile updated:', profile);
       // Navigate back to home or any related page
       navigate('/');
@@ -84,7 +130,10 @@ const ProfileSettings = () => {
           />
           <TextField
             label={t('Email')} fullWidth margin="normal" name="email" value={profile.email} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 
-            <TextField label={t('Dietary Preferences')} fullWidth margin="normal" name="dietaryPreferences" value={profile.dietaryPreferences} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 
+            <TextField label={t('age')} fullWidth margin="normal" name="" value={profile.age} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 
+            <TextField label={t('currentWeigh')} fullWidth margin="normal" name="currentWeight" value={profile.currentWeight} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 
+            <TextField label={t('height')} fullWidth margin="normal" name="height" value={profile.height} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} />
+            <TextField label={t('Dietary Preferences')} fullWidth margin="normal" name="dietaryPrefereces" value={profile.dietaryPreferences} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 
             <TextField label={t('Preferred Cuisines')} fullWidth margin="normal" name="preferredCuisines" value={profile.preferredCuisines} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 
             <TextField label={t('Disliked Ingredients')} fullWidth margin="normal" name="dislikedIngredients" value={profile.dislikedIngredients} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 
             <TextField label={t('Allergies')} fullWidth margin="normal" name="allergies" value={profile.allergies} onChange={handleInputChange} InputProps={{ readOnly: !editMode, }} /> 

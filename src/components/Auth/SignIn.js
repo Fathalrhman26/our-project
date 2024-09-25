@@ -1,62 +1,118 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Box, Typography, Alert } from '@mui/material';
+import {  Container,TextField, Button,  Typography,  } from '@mui/material';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import axios from 'axios';
+import { useNavigate} from 'react-router-dom';
 
 const SignIn = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const navigate = useNavigate();
+  
 
-  const handleSignIn = (event) => {
-    event.preventDefault();
+  // Formik setup for form handling and validation
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: Yup.object({
+      email: Yup.string()
+        .email('Invalid email format')
+        .required('Email is required'),
+      password: Yup.string()
+        .min(6, 'Password must be at least 6 characters long')
+        .required('Password is required'),
+    }),
+    onSubmit: async (values) => {
+      setErrorMessage('');
+      setSuccessMessage('');
+      
 
-    // Basic validation
-    if (!email || !password) {
-      setError('Please fill in all fields.');
-      return;
-    }
+      try {
+        // API call to login
+        const response = await axios.post('http://localhost:5000/login', values);
 
-    // Placeholder for actual sign-in logic (e.g., API call)
-    setError(null);
-    console.log('Signing in with:', { email, password });
+        // Store JWT token in local storage or cookies
+        localStorage.setItem('token', response.data.token);
+        //localStorage.getItem('token', response.data.token);
 
+        setSuccessMessage(response.data.message);
+        
+      } catch (error) {
+        // Handle API errors
+        if (error.response) {
+          setErrorMessage(error.response.data.message);
+        } else {
+          setErrorMessage('Login error occurred.');
+        }
+        
     // Simulate successful sign-in
     const isSuccess = true; // Replace with actual success check
 
     if (isSuccess) {
-      navigate('/home'); // Navigate to the home page after successful sign-in
+     navigate('/home'); // Navigate to the home page after successful sign-in
     } else {
-      setError('Invalid email or password.');
+      setErrorMessage('Invalid email or password.');
+
+   }
+      }
+   
+  
     }
-  };
+   
+
+  
+
+});
 
   return (
-    <Box component="form" onSubmit={handleSignIn} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-      <Typography variant="h5" component="h1" gutterBottom>
-        Sign In
+    <Container maxWidth="sm">
+      <Typography variant="h4" gutterBottom>
+        SignIn
       </Typography>
-      {error && <Alert severity="error">{error}</Alert>}
-      <TextField
-        label="Email"
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        fullWidth
-        required
-      />
-      <TextField
-        label="Password"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        fullWidth
-        required
-      />
-      <Button type="submit" variant="contained" color="primary">
-        Sign In
-      </Button>
-    </Box>
+
+      <form onSubmit={formik.handleSubmit}>
+        <TextField
+          label="Email"
+          name="email"
+          fullWidth
+          margin="normal"
+          value={formik.values.email}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.email && Boolean(formik.errors.email)}
+          helperText={formik.touched.email && formik.errors.email}
+        />
+
+        <TextField
+          label="Password"
+          name="password"
+          type="password"
+          fullWidth
+          margin="normal"
+          value={formik.values.password}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.password && Boolean(formik.errors.password)}
+          helperText={formik.touched.password && formik.errors.password}
+        />
+
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          fullWidth
+          disabled={!formik.isValid || formik.isSubmitting}
+        >
+          SignIn
+        </Button>
+      </form>
+
+      {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+      {successMessage && <Typography color="primary">{successMessage}</Typography>}
+    </Container>
   );
 };
 
