@@ -1,66 +1,96 @@
-// src/components/Home/Home.js
+// Home.js
+
 import React from 'react';
-import { Button, Container, Typography, AppBar, Box, Toolbar, Stack } from '@mui/material';
-import { Fastfood, ShoppingCart, EventNote } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
+import {
+    Container,
+    Typography,
+    Grid,
+    Avatar,
+    Button,
+} from '@mui/material';
+import { useStyles } from '../styles/globalStyles';
 import { Link } from 'react-router-dom';
-import { StyledAvatar, StyledProfileAvatar, StyledHomeBox, StyledLogo } from '../../styles/globalStyles'; // Adjusted import
-import useCurrentTime from '../../hooks/useCurrentTime';
 
-const Home = ({ username }) => {
-  const currentTime = useCurrentTime();
+/**
+ * Home component that serves as the central hub for user navigation.
+ * Displays a personalized greeting and navigation buttons.
+ */
+const Home = () => {
+    // Use custom styles from globalStyles.js
+    const classes = useStyles();
 
-  const getCurrentGreeting = () => {
-    const currentHour = currentTime.getHours();
-    if (currentHour < 12) {
-      return "Good Morning";
-    } else if (currentHour < 18) {
-      return "Good Afternoon";
-    } else {
-      return "Good Evening";
-    }
-  };
+    // Get user profile from Redux store
+    const profile = useSelector((state) => state.profile);
 
-  return (
-    <Container maxWidth="sm">
-      <AppBar position="static">
-        <Toolbar sx={{ alignItems: 'center', justifyContent: 'center' }}>
-          <StyledLogo src="path/to/logo.png" alt="App Logo" language={navigator.language} />
-          <Typography>AI Recipe & Meal Planning</Typography>
-        </Toolbar>
-      </AppBar>
-      <StyledHomeBox>
-        <Stack direction="column" spacing={2} justifyContent="center" ml={62} mt={4}>
-          <StyledProfileAvatar component={Link} to="/profile-setting">
-            A
-          </StyledProfileAvatar>
-        </Stack>
-        <Stack direction="row" spacing={4} justifyContent="center" alignItems="center" mt={5}>
-          <StyledAvatar src="/broken-image.jpg" />
-        </Stack>
-        <Typography variant="h4" component="h1" gutterBottom>
-          {getCurrentGreeting()}, {username}!
-        </Typography>
-      </StyledHomeBox>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2, alignItems: 'center', boxShadow: 4, borderRadius: 8 }}>
-        <p>
-        <Button variant="contained" startIcon={<EventNote />} component={Link} to="/meal-plan" sx={{ borderRadius: 10, mr: 3, py: 2 }}>
-          MealPlan Dashboard
-        </Button>
-        <Button variant="contained" startIcon={<Fastfood />} component={Link} to="/my-recipes" sx={{ borderRadius: 10, mr: 3, py: 2 }}>
-          My Recipes
-        </Button>
-        </p>
-        <p>
-        <Button variant="contained" startIcon={<ShoppingCart />} component={Link} to="/grocery-list" sx={{ borderRadius: 10, mr: 1, py: 2 }}>
-          Grocery List
-        </Button>
-        <Button variant="contained" startIcon={<EventNote />} component={Link} to="/tutorials" sx={{ borderRadius: 10, mr: 1, ml: 1, py: 2 }}>
-          Tutorials
-        </Button>
-        </p>
-      </Box>
-    </Container>
-  );
+    return (
+        <Container maxWidth="lg" className={classes.container}>
+            {/* Header with profile avatar and app logo */}
+            <Grid container alignItems="center" justify="space-between" className={classes.header}>
+                {/* Profile avatar */}
+                <Avatar src={profile.avatarUrl} className={classes.avatar} />
+                {/* App logo */}
+                <Typography variant="h6" className={classes.logo}>
+                    Meal Plan
+                </Typography>
+            </Grid>
+            {/* Personalized greeting */}
+            <Typography variant="h4" className={classes.greeting}>
+                Welcome back, {profile.name}!
+            </Typography>
+            {/* Navigation buttons */}
+            <Grid container spacing={4} className={classes.buttonGrid}>
+                <Grid item xs={12} sm={6} md={3}>
+                    <Button
+                        component={Link}
+                        to="/mealplan"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        className={classes.navButton}
+                    >
+                        Meal Plan
+                    </Button>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                    <Button
+                        component={Link}
+                        to="/myrecipes"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        className={classes.navButton}
+                    >
+                        My Recipes
+                    </Button>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                    <Button
+                        component={Link}
+                        to="/grocerylist"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        className={classes.navButton}
+                    >
+                        Grocery List
+                    </Button>
+                </Grid>
+                <Grid item xs={12} sm={6} md={3}>
+                    <Button
+                        component={Link}
+                        to="/tutorials"
+                        variant="contained"
+                        color="primary"
+                        fullWidth
+                        className={classes.navButton}
+                    >
+                        Tutorials
+                    </Button>
+                </Grid>
+            </Grid>
+        </Container>
+    );
 };
 
 export default Home;

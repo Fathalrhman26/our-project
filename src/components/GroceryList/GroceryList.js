@@ -1,65 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import { TextField, List, ListItem, ListItemText, IconButton, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { StyledBox, StyledAddButton, StyledBackButton } from '../../styles/globalStyles'; // Import styles
+// GroceryList.js
 
-const GroceryList = ({ mealPlanItems, onBack }) => {
-  const navigate = useNavigate();
-  const [groceryItems, setGroceryItems] = useState([]);
-  const [newItem, setNewItem] = useState('');
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchGroceryList, updateGroceryItem } from '../redux/slices/groceryListSlice';
+import {
+    Container,
+    Typography,
+    List,
+    ListItem,
+    ListItemText,
+    Checkbox,
+    ListItemSecondaryAction,
+    IconButton,
+} from '@mui/material';
+import { useStyles } from '../styles/globalStyles';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-  // Automatically add items from MealPlan.js
-  useEffect(() => {
-    if (mealPlanItems && mealPlanItems.length > 0) {
-      setGroceryItems(prevItems => [...prevItems, ...mealPlanItems]);
-    }
-  }, [mealPlanItems]);
+/**
+ * GroceryList component that displays the user's grocery list.
+ * Users can check off items, and the list syncs with the backend.
+ */
+const GroceryList = () => {
+    // Use custom styles from globalStyles.js
+    const classes = useStyles();
 
-  const handleAddItem = () => {
-    if (newItem.trim()) {
-      setGroceryItems([...groceryItems, newItem]);
-      setNewItem('');
-    }
-  };
+    // Redux dispatch function
+    const dispatch = useDispatch();
 
-  const handleRemoveItem = (index) => {
-    setGroceryItems(groceryItems.filter((_, i) => i !== index));
-  };
+    // Get grocery list state from Redux store
+    const groceryList = useSelector((state) => state.groceryList.items);
 
-  return (
-    <StyledBox>
-      <StyledBackButton onClick={() => navigate('/home')}>
-        <ArrowBackIcon />
-      </StyledBackButton>
-      <Typography variant="h5" gutterBottom>
-        Grocery List
-      </Typography>
-      <TextField
-        label="Add New Item"
-        value={newItem}
-        onChange={(e) => setNewItem(e.target.value)}
-        variant="outlined"
-        fullWidth
-        margin="normal"
-      />
-      <StyledAddButton onClick={handleAddItem}>
-        Add Item
-      </StyledAddButton>
-      <List>
-        {groceryItems.map((item, index) => (
-          <ListItem key={index}>
-            <ListItemText primary={item} />
-            <IconButton edge="end" onClick={() => handleRemoveItem(index)}>
-              <Typography variant="body2" color="error">
-                Remove
-              </Typography>
-            </IconButton>
-          </ListItem>
-        ))}
-      </List>
-    </StyledBox>
-  );
+    // Fetch the grocery list when the component mounts
+    useEffect(() => {
+        dispatch(fetchGroceryList());
+    }, [dispatch]);
+
+    /**
+     * Handle toggling of a grocery item.
+     * Dispatches an action to update the item's checked status.
+     * @param {string} itemId - The ID of the grocery item
+     */
+    const handleToggle = (itemId) => {
+        dispatch(updateGroceryItem(itemId));
+    };
+
+    return (
+        <Container maxWidth="md" className={classes.container}>
+            {/* Page title */}
+            <Typography variant="h4" className={classes.title}>
+                Grocery List
+            </Typography>
+            {/* Grocery items list */}
+            <List className={classes.list}>
+                {groceryList.map((item) => (
+                    <ListItem key={item.id} button onClick={() => handleToggle(item.id)}>
+                        {/* Checkbox to mark item as purchased */}
+                        <Checkbox
+                            edge="start"
+                            checked={item.checked}
+                            tabIndex={-1}
+                            disableRipple
+                            inputProps={{ 'aria-labelledby': `checkbox-list-label-${item.id}` }}
+                        />
+                        {/* Display item name */}
+                        <ListItemText id={`checkbox-list-label-${item.id}`} primary={item.name} />
+                        {/* Optionally, add a delete button */}
+                        <ListItemSecondaryAction>
+                            <IconButton edge="end" aria-label="delete">
+                                <DeleteIcon />
+                            </IconButton>
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                ))}
+            </List>
+        </Container>
+    );
 };
 
 export default GroceryList;

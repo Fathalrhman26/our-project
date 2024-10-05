@@ -1,124 +1,162 @@
-import React from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import { Box, Button, TextField, MenuItem, Select, InputLabel, FormControl, Typography } from '@mui/material';
-import { StyledBox } from '../../styles/globalStyles'; // Assuming paths
+// SearchRecipes.js
 
-const SearchRecipes = ({ onSearch }) => {
-  const initialValues = {
-    keywords: '',
-    dietaryPreference: '',
-    prepTime: '',
-    mealType: '', // New field for meal type
-  };
+import React, { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { searchRecipes } from '../redux/slices/recipesSlice';
+import {
+    Container,
+    Typography,
+    TextField,
+    Button,
+    Grid,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+} from '@mui/material';
+import RecipeCard from './RecipeCard';
+import { useStyles } from '../styles/globalStyles';
 
-  const validationSchema = Yup.object().shape({
-    keywords: Yup.string(),
-    dietaryPreference: Yup.string(),
-    prepTime: Yup.number()
-      .min(1, 'Preparation time must be at least 1 minute')
-      .max(120, 'Preparation time must be less than or equal to 120 minutes'),
-    mealType: Yup.string(),
-  });
+/**
+ * SearchRecipes component that allows users to search for recipes.
+ * Users can apply filters like meal type, prep time, and dietary preferences.
+ */
+const SearchRecipes = () => {
+    // Use custom styles from globalStyles.js
+    const classes = useStyles();
 
-  const handleSubmit = (values) => {
-    onSearch(values);
-  };
+    // Local state for search and filters
+    const [searchTerm, setSearchTerm] = useState('');
+    const [mealType, setMealType] = useState('');
+    const [prepTime, setPrepTime] = useState('');
+    const [dietaryPreference, setDietaryPreference] = useState('');
 
-  return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-    >
-      {({ isSubmitting, setFieldValue }) => (
-        <Form>
-          <StyledBox>
-            {/* Search Bar for Keywords */}
-            <Field name="keywords">
-              {({ field }) => (
-                <TextField
-                  {...field}
-                  label="Search Recipes"
-                  margin="normal"
-                  fullWidth
-                  helperText={<ErrorMessage name="keywords" />}
-                  error={Boolean(field.touched && field.error)}
-                />
-              )}
-            </Field>
-            
-            {/* Row with Dietary Preference, Preparation Time, and Meal Type */}
-            <Box sx={{ display: 'flex', gap: 4, justifyContent: 'center', mt: 2 }}>
-              <Field name="dietaryPreference">
-                {({ field }) => (
-                  <FormControl margin="normal" error={Boolean(field.touched && field.error)}>
-                    <InputLabel>Dietary Preference</InputLabel>
-                    <Select
-                      {...field}
-                      onChange={(event) => setFieldValue('dietaryPreference', event.target.value)}
-                      label="Dietary Preference"
-                    >
-                      <MenuItem value=""><em>All</em></MenuItem>
-                      <MenuItem value="vegetarian">Vegetarian</MenuItem>
-                      <MenuItem value="vegan">Vegan</MenuItem>
-                      <MenuItem value="glutenFree">Gluten Free</MenuItem>
-                      {/* Add more dietary preferences as needed */}
-                    </Select>
-                    <Typography variant="body2" color="error">
-                      <ErrorMessage name="dietaryPreference" />
-                    </Typography>
-                  </FormControl>
-                )}
-              </Field>
+    // Redux dispatch function
+    const dispatch = useDispatch();
 
-              <Field name="prepTime">
-                {({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Preparation Time"
-                    margin="normal"
-                    type="number"
-                    helperText={<ErrorMessage name="prepTime" />}
-                    error={Boolean(field.touched && field.error)}
-                  />
-                )}
-              </Field>
+    // Get search results from Redux store
+    const searchResults = useSelector((state) => state.recipes.searchResults);
 
-              <Field name="mealType">
-                {({ field }) => (
-                  <FormControl margin="normal" error={Boolean(field.touched && field.error)}>
-                    <InputLabel>Meal Type</InputLabel>
-                    <Select
-                      {...field}
-                      onChange={(event) => setFieldValue('mealType', event.target.value)}
-                      label="Meal Type"
-                    >
-                      <MenuItem value=""><em>All</em></MenuItem>
-                      <MenuItem value="breakfast">Breakfast</MenuItem>
-                      <MenuItem value="lunch">Lunch</MenuItem>
-                      <MenuItem value="dinner">Dinner</MenuItem>
-                      {/* Add more meal types as needed */}
-                    </Select>
-                    <Typography variant="body2" color="error">
-                      <ErrorMessage name="mealType" />
-                    </Typography>
-                  </FormControl>
-                )}
-              </Field>
-            </Box>
+    /**
+     * Handle form submission to search for recipes.
+     * Dispatches an action to fetch recipes based on search criteria.
+     * @param {Object} e - Event object
+     */
+    const handleSearch = (e) => {
+        e.preventDefault();
+        const filters = {
+            searchTerm,
+            mealType,
+            prepTime,
+            dietaryPreference,
+        };
+        dispatch(searchRecipes(filters));
+    };
 
-            {/* Submit/Search Button */}
-            <Button variant="contained" color="primary" type="submit" disabled={isSubmitting} sx={{ mt: 2 }}>
-              Search
-            </Button>
-            
-            {/* Icon Button for additional actions, positioned within the main frame */}
-          </StyledBox>
-        </Form>
-      )}
-    </Formik>
-  );
+    return (
+        <Container maxWidth="lg" className={classes.container}>
+            {/* Page title */}
+            <Typography variant="h4" className={classes.title}>
+                Search Recipes
+            </Typography>
+            {/* Search form */}
+            <form onSubmit={handleSearch} className={classes.form}>
+                <Grid container spacing={2}>
+                    {/* Search term input */}
+                    <Grid item xs={12} sm={6} md={3}>
+                        <TextField
+                            label="Search"
+                            variant="outlined"
+                            fullWidth
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className={classes.textField}
+                        />
+                    </Grid>
+                    {/* Meal type select */}
+                    <Grid item xs={12} sm={6} md={3}>
+                        <FormControl variant="outlined" fullWidth className={classes.formControl}>
+                            <InputLabel id="meal-type-label">Meal Type</InputLabel>
+                            <Select
+                                labelId="meal-type-label"
+                                value={mealType}
+                                onChange={(e) => setMealType(e.target.value)}
+                                label="Meal Type"
+                            >
+                                <MenuItem value="">
+                                    <em>None</em>
+                                </MenuItem>
+                                <MenuItem value="Breakfast">Breakfast</MenuItem>
+                                <MenuItem value="Lunch">Lunch</MenuItem>
+                                <MenuItem value="Dinner">Dinner</MenuItem>
+                                <MenuItem value="Snack">Snack</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    {/* Preparation time select */}
+                    <Grid item xs={12} sm={6} md={3}>
+                        <FormControl variant="outlined" fullWidth className={classes.formControl}>
+                            <InputLabel id="prep-time-label">Prep Time</InputLabel>
+                            <Select
+                                labelId="prep-time-label"
+                                value={prepTime}
+                                onChange={(e) => setPrepTime(e.target.value)}
+                                label="Prep Time"
+                            >
+                                <MenuItem value="">
+                                    <em>Any</em>
+                                </MenuItem>
+                                <MenuItem value="15">Under 15 mins</MenuItem>
+                                <MenuItem value="30">Under 30 mins</MenuItem>
+                                <MenuItem value="60">Under 1 hour</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    {/* Dietary preference select */}
+                    <Grid item xs={12} sm={6} md={3}>
+                        <FormControl variant="outlined" fullWidth className={classes.formControl}>
+                            <InputLabel id="dietary-preference-label">Dietary Preference</InputLabel>
+                            <Select
+                                labelId="dietary-preference-label"
+                                value={dietaryPreference}
+                                onChange={(e) => setDietaryPreference(e.target.value)}
+                                label="Dietary Preference"
+                            >
+                                <MenuItem value="">
+                                    <em>None</em>
+                                </MenuItem>
+                                <MenuItem value="Vegetarian">Vegetarian</MenuItem>
+                                <MenuItem value="Vegan">Vegan</MenuItem>
+                                <MenuItem value="Gluten-Free">Gluten-Free</MenuItem>
+                                <MenuItem value="Keto">Keto</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    {/* Search button */}
+                    <Grid item xs={12}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="primary"
+                            fullWidth
+                            className={classes.searchButton}
+                        >
+                            Search
+                        </Button>
+                    </Grid>
+                </Grid>
+            </form>
+            {/* Search results */}
+            <Grid container spacing={4} className={classes.grid}>
+                {searchResults.map((recipe) => (
+                    <Grid item xs={12} sm={6} md={4} key={recipe.id}>
+                        {/* Display each recipe using RecipeCard */}
+                        <RecipeCard recipe={recipe} />
+                    </Grid>
+                ))}
+            </Grid>
+        </Container>
+    );
 };
 
 export default SearchRecipes;

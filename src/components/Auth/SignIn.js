@@ -1,15 +1,34 @@
-import React, { useState } from 'react';
-import {  Container,TextField, Button,  Typography,  } from '@mui/material';
+// SignIn.js
+
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../redux/slices/authSlice';
+import { useNavigate } from 'react-router-dom';
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Alert,
+  Container,
+} from '@mui/material';
+import { Link } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
-import { useNavigate} from 'react-router-dom';
 
+/**
+ * SignIn component for user login.
+ * Allows users to input their email and password to sign in.
+ */
 const SignIn = () => {
-  const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
+  // Redux dispatch function
+  const dispatch = useDispatch();
+
+  // useNavigate hook for navigation
   const navigate = useNavigate();
-  
+
+  // Get authentication state from Redux store
+  const auth = useSelector((state) => state.auth);
 
   // Formik setup for form handling and validation
   const formik = useFormik({
@@ -19,99 +38,89 @@ const SignIn = () => {
     },
     validationSchema: Yup.object({
       email: Yup.string()
-        .email('Invalid email format')
+        .email('Invalid email address format')
         .required('Email is required'),
       password: Yup.string()
-        .min(6, 'Password must be at least 6 characters long')
         .required('Password is required'),
     }),
-    onSubmit: async (values) => {
-      setErrorMessage('');
-      setSuccessMessage('');
-      
-
-      try {
-        // API call to login
-        const response = await axios.post('http://localhost:5000/login', values);
-
-        // Store JWT token in local storage or cookies
-        localStorage.setItem('token', response.data.token);
-        //localStorage.getItem('token', response.data.token);
-
-        setSuccessMessage(response.data.message);
-        
-      } catch (error) {
-        // Handle API errors
-        if (error.response) {
-          setErrorMessage(error.response.data.message);
-        } else {
-          setErrorMessage('Login error occurred.');
-        }
-        
-    // Simulate successful sign-in
-    const isSuccess = true; // Replace with actual success check
-
-    if (isSuccess) {
-     navigate('/home'); // Navigate to the home page after successful sign-in
-    } else {
-      setErrorMessage('Invalid email or password.');
-
-   }
-      }
-   
-  
-    }
-   
-
-  
-
-});
+    onSubmit: (values, { setSubmitting }) => {
+      // Dispatch login action with email and password
+      dispatch(loginUser(values))
+        .unwrap()
+        .then(() => {
+          // On successful login, redirect to home page
+          navigate('/home');
+        })
+        .catch((error) => {
+          // Handle errors (optional)
+          console.error('Login failed:', error);
+        })
+        .finally(() => {
+          setSubmitting(false);
+        });
+    },
+  });
 
   return (
     <Container maxWidth="sm">
-      <Typography variant="h4" gutterBottom>
-        SignIn
-      </Typography>
+      <Box
+        component="form"
+        onSubmit={formik.handleSubmit}
+        sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 5 }}
+      >
+        <Typography variant="h5" component="h1" gutterBottom>
+          Sign In
+        </Typography>
 
-      <form onSubmit={formik.handleSubmit}>
+        {/* Display authentication error if any */}
+        {auth.error && <Alert severity="error">{auth.error}</Alert>}
+
+        {/* Email input field */}
         <TextField
           label="Email"
           name="email"
-          fullWidth
-          margin="normal"
+          type="email"
           value={formik.values.email}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
+          fullWidth
+          required
           error={formik.touched.email && Boolean(formik.errors.email)}
           helperText={formik.touched.email && formik.errors.email}
         />
 
+        {/* Password input field */}
         <TextField
           label="Password"
           name="password"
           type="password"
-          fullWidth
-          margin="normal"
           value={formik.values.password}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
+          fullWidth
+          required
           error={formik.touched.password && Boolean(formik.errors.password)}
           helperText={formik.touched.password && formik.errors.password}
         />
 
+        {/* Submit button */}
         <Button
+          type="submit"
           variant="contained"
           color="primary"
-          type="submit"
-          fullWidth
-          disabled={!formik.isValid || formik.isSubmitting}
+          disabled={!formik.isValid || formik.isSubmitting || auth.loading}
         >
-          SignIn
+          {auth.loading ? 'Signing In...' : 'Sign In'}
         </Button>
-      </form>
 
-      {errorMessage && <Typography color="error">{errorMessage}</Typography>}
-      {successMessage && <Typography color="primary">{successMessage}</Typography>}
+        {/* Link to Sign Up page */}
+        <Typography variant="body2" align="center">
+          Don't have an account?{' '}
+          <Link to="/signup">
+            Sign Up
+          </Link>
+        </Typography>
+      </Box>
     </Container>
   );
 };

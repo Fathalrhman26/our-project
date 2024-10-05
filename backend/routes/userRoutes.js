@@ -1,11 +1,14 @@
+// routes/userRoutes.js
+
 const express = require('express');
 const router = express.Router();
-const auth =require('../middleware/auth');
-const{getProfile,updateProfile}=require('../controllers/userController');
+const userController = require('../controllers/userController');
+const authMiddleware = require('../middleware/auth');
 
+// Get User Profile (Protected Route)
+router.get('/profile', authMiddleware, userController.getProfile);
 
-router.get('/profile',auth,getProfile);
-// put (update)
-router.put('/profile',auth,updateProfile);
+// Update User Profile (Protected Route)
+router.put('/profile', authMiddleware, userController.updateProfile);
 
 module.exports = router;

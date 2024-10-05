@@ -1,9 +1,20 @@
+// routes/recipeRoutes.js
+
 const express = require('express');
 const router = express.Router();
-const {SearchRecipes,getRcipes} = require('../controllers/RecipeController');
+const recipeController = require('../controllers/recipeController');
+const authMiddleware = require('../middleware/auth');
 
-//router.post('/recipe',recipeController.createRecipe);
-router.get('/recipe',getRcipes);
-router.get('/searchRecipes',SearchRecipes);
+// Get User's Saved Recipes (Protected Route)
+router.get('/my', authMiddleware, recipeController.getMyRecipes);
+
+// Search for Recipes (Protected Route)
+router.get('/search', authMiddleware, recipeController.searchRecipes);
+
+// Save a Recipe (Protected Route)
+router.post('/', authMiddleware, recipeController.saveRecipe);
+
+// Get a Specific Recipe (Protected Route)
+router.get('/:id', authMiddleware, recipeController.getRecipeById);
 
 module.exports = router;

@@ -1,10 +1,17 @@
+// routes/authRoutes.js
+
 const express = require('express');
 const router = express.Router();
-const {register,login} = require('../controllers/authController');
+const authController = require('../controllers/authController');
+const authMiddleware = require('../middleware/auth');
 
+// User Registration
+router.post('/register', authController.register);
 
-router.post('/register',register );
-router.post('/login',login);
+// User Login
+router.post('/login', authController.login);
 
+// Change Password (Protected Route)
+router.post('/change-password', authMiddleware, authController.changePassword);
 
 module.exports = router;

@@ -1,53 +1,45 @@
- const  MealPlan = require('../models/MealPlan');
- const recipe  = require('../models/Recipe');
- exports.createMealPlan = async (req , res ) => {
-    const {userId ,meals} = req.body;
+// controllers/mealPlanController.js
 
-    try{
-        //const mealPlan = await MealPlan.create(req.body);
-        const mealPlan = new MealPlan({
-            user:userId,
-            meals,
-        });  
-        await mealPlan.save();
-       // res.json(mealPlan);
-       res.status(201).json(mealPlan);
+const MealPlan = require('../models/MealPlan');
+const Recipe = require('../models/Recipe');
 
-    }catch (error){
-   res.status(500).json({error : error.message});
+/**
+ * Gets the user's meal plan.
+ */
+exports.getMealPlan = async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const mealPlan = await MealPlan.getByUserId(userId);
+
+    res.status(200).json(mealPlan);
+  } catch (error) {
+    console.error('Get Meal Plan Error:', error);
+    res.status(500).json({ message: 'Server error fetching meal plan' });
+  }
+};
+
+/**
+ * Updates the user's meal plan.
+ */
+exports.updateMealPlan = async (req, res) => {
+  const userId = req.user.id;
+  const { meals } = req.body; // Expecting an array of meal objects with date and recipe_id
+
+  try {
+    if (!Array.isArray(meals) || meals.length === 0) {
+      return res.status(400).json({ message: 'Meals array is required and cannot be empty' });
     }
-    
- };
- 
 
- exports.getMealPlans = async ( req, res ) => {
+    // Delete existing meal plan
+    await MealPlan.deleteByUserId(userId);
 
-    try {
-        const mealPlan  = await MealPlan.findOne({user:req.user.id}).populate(
-            'meals.breakfast meals.lunch meals.dinner');
-            if(!mealPlan) 
-                return
-                res.status(404).json({message:'Meal plan not found'});
-            
-           // res.json(mealPlan);
-        res.status(200).json(mealPlan);
-    } catch (error){
-        res.status(500).json({error:error.message});
-    }
- 
- } ;
-exports.updateMealPlan = async (req,res)=>{
-    const {meals}=req.body;
-    try{
-        const mealPlan = await MealPlan.findOne({user:req.user.id});
-        if(!mealPlan)
-            return
-        res.status(404).json({msg:'Meal plan not found'});
-        mealPlan.meals =  meals;
-        await mealPlan.save();
-         // res.json(mealPlan);
-        res.status(200).json(mealPlan);
-    }catch(err){
-        res.status(500).json({error:error.message});
-    }
+    // Insert new meals
+    await MealPlan.insertMeals(userId, meals);
+
+    res.status(200).json({ message: 'Meal plan updated successfully' });
+  } catch (error) {
+    console.error('Update Meal Plan Error:', error);
+    res.status(500).json({ message: 'Server error updating meal plan' });
+  }
 };

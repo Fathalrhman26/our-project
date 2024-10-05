@@ -1,11 +1,14 @@
+// routes/mealPlanRoutes.js
+
 const express = require('express');
 const router = express.Router();
-const auth =require('../middleware/auth');
-const {createMealPlan,getMealPlans,updateMealPlan } = require('../controllers/mealPlanController');
+const mealPlanController = require('../controllers/mealPlanController');
+const authMiddleware = require('../middleware/auth');
 
+// Get Meal Plan (Protected Route)
+router.get('/', authMiddleware, mealPlanController.getMealPlan);
 
-router.post('/mealPlan',auth,createMealPlan);
-router.get('/mealPlan' ,auth,getMealPlans);
-router.put('/mealPlan',auth,updateMealPlan)
+// Update Meal Plan (Protected Route)
+router.put('/', authMiddleware, mealPlanController.updateMealPlan);
 
 module.exports = router;

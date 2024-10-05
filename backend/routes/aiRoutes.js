@@ -1,12 +1,11 @@
+// routes/aiRoutes.js
+
 const express = require('express');
 const router = express.Router();
-const aiController =require('../controllers/aiController');
+const aiController = require('../controllers/aiController');
+const authMiddleware = require('../middleware/auth');
 
-//const recipeController =require('../controllers/RecipeController');
+// Generate Meal Plan (Protected Route)
+router.post('/mealplan', authMiddleware, aiController.generateMealPlan);
 
-
-
-router.post('/suggestions' , aiController.getRecipeSuggestions);
-
-//router.post('/recipe' , recipeController.getRcipes);
 module.exports = router;

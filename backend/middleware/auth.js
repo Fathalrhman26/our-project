@@ -1,27 +1,33 @@
+// auth.js
+
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-/*module.exports = function(req, res, next) {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) return res.status(403).send('Access denied.');
+/**
+ * Middleware to authenticate JWT tokens.
+ * Adds the user ID to the request object if authentication is successful.
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
+module.exports = (req, res, next) => {
+  const authHeader = req.headers.authorization;
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.status(403).send('Invalid token.');
-        req.user = user;
-        next();
-    });
-};*/
+  // Check if authorization header is present
+  if (!authHeader) {
+    return res.status(401).json({ message: 'Authorization header missing' });
+  }
 
-module.exports = function(req, res, next){
-    const token = req.header('x-authMiddleware-token');
-    if(!token) return
-     res.status(401).json({msg:'no token authorization denied'});
-    try{
+  // Extract token from header
+  const token = authHeader.split(' ')[1];
+
+  try {
+    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user=user.decoded;
+    req.user = { id: decoded.id }; // Add user ID to request object
     next();
-    }catch  (err){
-    res.status(401).json({msg:'token is not valid'});
-    }
-
+  } catch (error) {
+    console.error('Authentication Middleware Error:', error);
+    res.status(401).json({ message: 'Invalid or expired token' });
+  }
 };
-

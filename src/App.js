@@ -1,33 +1,39 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+// App.js
 
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Auth from './components/Auth/Auth';
 import Home from './components/Home/Home';
-import ProfileSettings from './components/ProfileSettings/ProfileSettings';
-import MyRecipes from './components/MyRecipes/MyRecipes';
-import GroceryList from './components/GroceryList/GroceryList';
-import MealPlan from './components/MealPlan/MealPlan';
-import Tutorials from './components/Tutorials/Tutorials';
-import Auth from "./components/Auth/Auth";
+import { useSelector } from 'react-redux';
 
-function App (){
-
+/**
+ * Main application component that handles routing and authentication logic.
+ */
+const App = () => {
+  // Get authentication state from Redux store
+  const auth = useSelector((state) => state.auth);
 
   return (
-    <div>
-   
-  <Router>
-    <Routes>
-    <Route path="/" element={<Auth/>} />
-        <Route path= "/home" element = {<Home username = "Ali" />}/>
-        <Route path="/profile-setting" element={<ProfileSettings />} />
-        <Route path="/my-recipes" element={<MyRecipes />} />
-        <Route path="/grocery-list" element={<GroceryList />} />
-        <Route path="/meal-plan" element={<MealPlan />} />
-        <Route path="/tutorials" element={<Tutorials />} />
-        
+    <Router>
+      <Routes>
+        {/* Public routes */}
+        <Route path="/signin" element={<Auth />} />
+        <Route path="/signup" element={<Auth />} />
+
+        {/* Protected routes */}
+        {auth.isAuthenticated ? (
+          <>
+            <Route path="/home" element={<Home />} />
+            {/* Add other protected routes here */}
+            <Route path="*" element={<Navigate to="/home" replace />} />
+          </>
+        ) : (
+          // Redirect unauthenticated users to sign-in page
+          <Route path="*" element={<Navigate to="/signin" replace />} />
+        )}
       </Routes>
-      </Router>
-      </div>
+    </Router>
   );
-}
- export default App;
+};
+
+export default App;
