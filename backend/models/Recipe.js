@@ -1,47 +1,46 @@
-// Recipe.js
+// backend/models/Recipe.js
 
-const pool = require('../config/db');
+const { DataTypes, Model } = require('sequelize');
+const sequelize = require('../config/sequelize');
+const User = require('./User');
 
 /**
- * Recipe model that handles database operations related to recipes.
+ * Recipe model representing the recipes table in the database.
  */
-class Recipe {
-  /**
-   * Gets recipes saved by a user.
-   * @param {number} userId - User's ID
-   * @returns {Promise<Array>} - Array of recipes
-   */
-  static async getByUserId(userId) {
-    const result = await pool.query(
-      'SELECT * FROM recipes WHERE user_id = $1',
-      [userId]
-    );
-    return result.rows;
-  }
+class Recipe extends Model {}
 
-  /**
-   * Saves a recipe for a user.
-   * @param {number} userId - User's ID
-   * @param {Object} recipeData - Recipe data
-   * @returns {Promise<Object>} - Saved recipe
-   */
-  static async save(userId, recipeData) {
-    const result = await pool.query(
-      'INSERT INTO recipes (user_id, recipe_data) VALUES ($1, $2) RETURNING *',
-      [userId, recipeData]
-    );
-    return result.rows[0];
+Recipe.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    recipeData: {
+      type: DataTypes.JSONB,
+      allowNull: false,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: User,
+        key: 'id',
+      },
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
+      allowNull: true, // Allows null if user is deleted
+    },
+  },
+  {
+    sequelize,
+    modelName: 'Recipe',
+    tableName: 'recipes',
+    timestamps: false,
   }
+);
 
-  /**
-   * Finds a recipe by ID.
-   * @param {number} id - Recipe ID
-   * @returns {Promise<Object>} - Recipe object
-   */
-  static async findById(id) {
-    const result = await pool.query('SELECT * FROM recipes WHERE id = $1', [id]);
-    return result.rows[0];
-  }
-}
+// Define associations
+Recipe.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+User.hasMany(Recipe, { foreignKey: 'userId', as: 'recipes' });
 
 module.exports = Recipe;

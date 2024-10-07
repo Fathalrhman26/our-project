@@ -1,7 +1,7 @@
-// mealPlanSlice.js
+// frontend/src/redux/slices/mealPlanSlice.js
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axiosInstance from '../../../utils/axiosInstance';
 
 /**
  * Thunk action to fetch the user's meal plan from the backend.
@@ -10,10 +10,58 @@ export const fetchMealPlan = createAsyncThunk(
   'mealPlan/fetchMealPlan',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('/api/mealplan');
+      const response = await axiosInstance.get('/api/mealplan');
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data.message || 'Failed to fetch meal plan');
+      const message =
+        error.response && error.response.data && error.response.data.message
+          ? error.response.data.message
+          : error.message;
+      return rejectWithValue(message);
+    }
+  }
+);
+
+/**
+ * Thunk action to add a recipe to the meal plan.
+ */
+export const addToMealPlan = createAsyncThunk(
+  'mealPlan/addToMealPlan',
+  async ({ recipeId, date }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post('/api/recipes/add-to-plan', {
+        recipeId,
+        date,
+      });
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response && error.response.data && error.response.data.message
+          ? error.response.data.message
+          : error.message;
+      return rejectWithValue(message);
+    }
+  }
+);
+
+/**
+ * Thunk action to swap a meal in the meal plan.
+ */
+export const swapMeal = createAsyncThunk(
+  'mealPlan/swapMeal',
+  async ({ mealPlanId, newRecipeId }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put('/api/recipes/swap-meal', {
+        mealPlanId,
+        newRecipeId,
+      });
+      return response.data;
+    } catch (error) {
+      const message =
+        error.response && error.response.data && error.response.data.message
+          ? error.response.data.message
+          : error.message;
+      return rejectWithValue(message);
     }
   }
 );
@@ -26,10 +74,14 @@ export const updateMealPlan = createAsyncThunk(
   'mealPlan/updateMealPlan',
   async (mealPlanData, { rejectWithValue }) => {
     try {
-      const response = await axios.put('/api/mealplan', mealPlanData);
+      const response = await axiosInstance.put('/api/mealplan', mealPlanData);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data.message || 'Failed to update meal plan');
+      const message =
+        error.response && error.response.data && error.response.data.message
+          ? error.response.data.message
+          : error.message;
+      return rejectWithValue(message);
     }
   }
 );
@@ -45,7 +97,6 @@ const initialState = {
 
 /**
  * Meal plan slice that manages the meal plan state.
- * Handles fetching and updating the user's meal plan.
  */
 const mealPlanSlice = createSlice({
   name: 'mealPlan',
@@ -66,6 +117,39 @@ const mealPlanSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // Handle addToMealPlan actions
+      .addCase(addToMealPlan.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addToMealPlan.fulfilled, (state, action) => {
+        state.loading = false;
+        // Assuming the backend returns the newly added meal
+        state.meals.push(action.payload);
+      })
+      .addCase(addToMealPlan.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Handle swapMeal actions
+      .addCase(swapMeal.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(swapMeal.fulfilled, (state, action) => {
+        state.loading = false;
+        // Assuming the backend returns the updated meal
+        const index = state.meals.findIndex(
+          (meal) => meal.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.meals[index] = action.payload;
+        }
+      })
+      .addCase(swapMeal.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
       // Handle updateMealPlan actions
       .addCase(updateMealPlan.pending, (state) => {
         state.loading = true;
@@ -82,5 +166,4 @@ const mealPlanSlice = createSlice({
   },
 });
 
-// Export reducer to be included in the store
 export default mealPlanSlice.reducer;

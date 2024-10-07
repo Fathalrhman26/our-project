@@ -1,49 +1,59 @@
-// MealPlan.js
+// backend/models/MealPlan.js
 
-const pool = require('../config/db');
+const { DataTypes, Model } = require('sequelize');
+const sequelize = require('../config/sequelize');
+const User = require('./User');
+const Recipe = require('./Recipe');
 
 /**
- * MealPlan model that handles database operations related to meal plans.
+ * MealPlan model representing the meal_plans table in the database.
  */
-class MealPlan {
-  /**
-   * Gets a user's meal plan.
-   * @param {number} userId - User's ID
-   * @returns {Promise<Array>} - Array of meal plan entries
-   */
-  static async getByUserId(userId) {
-    const result = await pool.query(
-      'SELECT * FROM meal_plans WHERE user_id = $1 ORDER BY date',
-      [userId]
-    );
-    return result.rows;
-  }
+class MealPlan extends Model {}
 
-  /**
-   * Deletes a user's existing meal plan.
-   * @param {number} userId - User's ID
-   * @returns {Promise<void>}
-   */
-  static async deleteByUserId(userId) {
-    await pool.query('DELETE FROM meal_plans WHERE user_id = $1', [userId]);
+MealPlan.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    date: {
+      type: DataTypes.DATEONLY,
+      allowNull: false,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: User,
+        key: 'id',
+      },
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
+      allowNull: true, // Allows null if user is deleted
+    },
+    recipeId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Recipe,
+        key: 'id',
+      },
+      onDelete: 'SET NULL',
+      onUpdate: 'CASCADE',
+      allowNull: true, // Allows null if recipe is deleted
+    },
+  },
+  {
+    sequelize,
+    modelName: 'MealPlan',
+    tableName: 'meal_plans',
+    timestamps: false,
   }
+);
 
-  /**
-   * Inserts multiple meal plan entries for a user.
-   * @param {number} userId - User's ID
-   * @param {Array} meals - Array of meal objects
-   * @returns {Promise<void>}
-   */
-  static async insertMeals(userId, meals) {
-    const insertQueries = meals.map((meal) => {
-      const { date, recipe_id } = meal;
-      return pool.query(
-        'INSERT INTO meal_plans (user_id, date, recipe_id) VALUES ($1, $2, $3)',
-        [userId, date, recipe_id]
-      );
-    });
-    await Promise.all(insertQueries);
-  }
-}
+// Define associations
+MealPlan.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+MealPlan.belongsTo(Recipe, { foreignKey: 'recipeId', as: 'recipe' });
+User.hasMany(MealPlan, { foreignKey: 'userId', as: 'mealPlans' });
+Recipe.hasMany(MealPlan, { foreignKey: 'recipeId', as: 'mealPlans' });
 
 module.exports = MealPlan;

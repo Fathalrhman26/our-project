@@ -1,8 +1,58 @@
 // controllers/recipeController.js
 
 const Recipe = require('../models/Recipe');
+const MealPlan = require('../models/MealPlan');
 const axios = require('axios');
 require('dotenv').config();
+
+
+/**
+ * Adds a recipe to the user's meal plan.
+ */
+exports.addToPlan = async (req, res) => {
+  const userId = req.user.id;
+  const { recipeId, date } = req.body;
+
+  try {
+    // Create a new meal plan entry
+    await MealPlan.create({
+      userId,
+      recipeId,
+      date,
+    });
+
+    res.status(201).json({ message: 'Recipe added to meal plan' });
+  } catch (error) {
+    console.error('Add To Plan Error:', error);
+    res.status(500).json({ message: 'Server error adding recipe to meal plan' });
+  }
+};
+
+/**
+ * Swaps a meal in the user's meal plan.
+ */
+exports.swapMeal = async (req, res) => {
+  const userId = req.user.id;
+  const { mealPlanId, newRecipeId } = req.body;
+
+  try {
+    // Find the meal plan entry
+    const mealPlan = await MealPlan.findOne({ where: { id: mealPlanId, userId } });
+
+    if (!mealPlan) {
+      return res.status(404).json({ message: 'Meal plan entry not found' });
+    }
+
+    // Update the recipe
+    mealPlan.recipeId = newRecipeId;
+    await mealPlan.save();
+
+    res.status(200).json({ message: 'Meal swapped successfully' });
+  } catch (error) {
+    console.error('Swap Meal Error:', error);
+    res.status(500).json({ message: 'Server error swapping meal' });
+  }
+};
 
 /**
  * Fetches the user's saved recipes.

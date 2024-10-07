@@ -1,7 +1,7 @@
 // groceryListSlice.js
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axiosInstance from '../../../utils/axiosInstance';
 
 /**
  * Thunk action to fetch the grocery list from the backend.
@@ -10,7 +10,7 @@ export const fetchGroceryList = createAsyncThunk(
   'groceryList/fetchGroceryList',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('/api/grocerylist');
+      const response = await axiosInstance.get('/api/grocerylist');
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || 'Failed to fetch grocery list');
@@ -27,7 +27,7 @@ export const updateGroceryItem = createAsyncThunk(
   'groceryList/updateGroceryItem',
   async (itemId, { rejectWithValue }) => {
     try {
-      const response = await axios.put(`/api/grocerylist/${itemId}`);
+      const response = await axiosInstance.put(`/api/grocerylist/${itemId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || 'Failed to update grocery item');

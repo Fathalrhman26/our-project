@@ -1,4 +1,4 @@
-// SignUp.js
+// frontend/src/components/Auth/SignUp.js
 
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -18,13 +18,9 @@ import * as Yup from 'yup';
 
 /**
  * SignUp component for new user registration.
- * Allows users to create a new account by providing necessary details.
  */
 const SignUp = () => {
-  // Redux dispatch function
   const dispatch = useDispatch();
-
-  // useNavigate hook for navigation
   const navigate = useNavigate();
 
   // Get authentication state from Redux store
@@ -53,19 +49,18 @@ const SignUp = () => {
         .required('Confirm your password'),
     }),
     onSubmit: (values, { setSubmitting }) => {
-      // Dispatch register action with name, email, and password
-      dispatch(registerUser({
-        name: values.name,
-        email: values.email,
-        password: values.password,
-      }))
+      dispatch(
+        registerUser({
+          name: values.name,
+          email: values.email,
+          password: values.password,
+        })
+      )
         .unwrap()
         .then(() => {
-          // On successful registration, redirect to home page
           navigate('/home');
         })
         .catch((error) => {
-          // Handle errors (optional)
           console.error('Registration failed:', error);
         })
         .finally(() => {
@@ -139,8 +134,13 @@ const SignUp = () => {
           onBlur={formik.handleBlur}
           fullWidth
           required
-          error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
-          helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+          error={
+            formik.touched.confirmPassword &&
+            Boolean(formik.errors.confirmPassword)
+          }
+          helperText={
+            formik.touched.confirmPassword && formik.errors.confirmPassword
+          }
         />
 
         {/* Submit button */}

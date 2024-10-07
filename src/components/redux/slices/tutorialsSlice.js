@@ -1,7 +1,7 @@
 // tutorialsSlice.js
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axiosInstance from '../../../utils/axiosInstance';
 
 /**
  * Thunk action to fetch tutorials based on the user's meal plan or selected recipes.
@@ -10,7 +10,7 @@ export const fetchTutorials = createAsyncThunk(
   'tutorials/fetchTutorials',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('/api/tutorials');
+      const response = await axiosInstance.get('/api/tutorials');
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || 'Failed to fetch tutorials');

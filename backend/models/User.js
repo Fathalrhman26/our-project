@@ -1,104 +1,95 @@
-// User.js
+// backend/models/User.js
 
-const pool = require('../config/db');
+const { DataTypes, Model } = require('sequelize');
+const sequelize = require('../config/sequelize');
 
 /**
- * User model that handles database operations related to users.
+ * User model representing the users table in the database.
  */
-class User {
+class User extends Model {
   /**
    * Finds a user by email.
-   * @param {string} email - User's email
-   * @returns {Promise<Object|null>} - User object or null if not found
+   * @param {string} email - User's email.
+   * @returns {Promise<User|null>} - User instance or null if not found.
    */
   static async findByEmail(email) {
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    return result.rows[0] || null;
-  }
-
-  /**
-   * Finds a user by ID.
-   * @param {number} id - User's ID
-   * @returns {Promise<Object|null>} - User object or null if not found
-   */
-  static async findById(id) {
-    const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-    return result.rows[0] || null;
-  }
-
-  /**
-   * Creates a new user.
-   * @param {Object} userData - User data
-   * @param {string} userData.name - User's name
-   * @param {string} userData.email - User's email
-   * @param {string} userData.password - Hashed password
-   * @returns {Promise<Object>} - Created user object
-   */
-  static async create(userData) {
-    const { name, email, password } = userData;
-
-    const result = await pool.query(
-      `INSERT INTO users (name, email, password)
-       VALUES ($1, $2, $3)
-       RETURNING id, name, email`,
-      [name, email, password]
-    );
-
-    return result.rows[0];
-  }
-
-  /**
-   * Updates a user's profile.
-   * @param {number} id - User's ID
-   * @param {Object} updateData - Data to update
-   * @returns {Promise<Object>} - Updated user object
-   */
-  static async updateProfile(id, updateData) {
-    const fields = [];
-    const values = [];
-    let index = 1;
-
-    for (const key in updateData) {
-      fields.push(`${key} = $${index}`);
-      values.push(updateData[key]);
-      index++;
-    }
-
-    values.push(id); // Add user ID as the last parameter
-
-    const result = await pool.query(
-      `UPDATE users SET ${fields.join(', ')}
-       WHERE id = $${index}
-       RETURNING id, name, email, age, country, current_weight AS "currentWeight",
-                 height, dietary_preferences AS "dietaryPreferences",
-                 preferred_cuisines AS "preferredCuisines",
-                 disliked_ingredients AS "dislikedIngredients",
-                 allergies, health_goal AS "healthGoal",
-                 avatar_url AS "avatarUrl"`,
-      values
-    );
-
-    return result.rows[0];
-  }
-
-  /**
-   * Updates a user's password.
-   * @param {number} id - User's ID
-   * @param {string} hashedPassword - New hashed password
-   * @returns {Promise<void>}
-   */
-  static async updatePassword(id, hashedPassword) {
-    await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, id]);
-  }
-
-  /**
-   * Deletes a user by ID.
-   * @param {number} id - User's ID
-   * @returns {Promise<void>}
-   */
-  static async deleteById(id) {
-    await pool.query('DELETE FROM users WHERE id = $1', [id]);
+    return await User.findOne({ where: { email } });
   }
 }
+
+User.init(
+  {
+    // Define model attributes
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true, // Email validation
+      },
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    // Additional fields
+    age: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    country: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    currentWeight: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+      field: 'currentWeight',
+    },
+    height: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    dietaryPreferences: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    preferredCuisines: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    dislikedIngredients: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    allergies: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    healthGoal: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    avatarUrl: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+  },
+  {
+    sequelize,
+    modelName: 'User',
+    tableName: 'users',
+    timestamps: false,
+  }
+);
 
 module.exports = User;

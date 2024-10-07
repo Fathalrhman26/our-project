@@ -1,7 +1,7 @@
 // profileSlice.js
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axiosInstance from '../../../utils/axiosInstance';
 
 /**
  * Thunk action to fetch user profile from the backend.
@@ -10,7 +10,7 @@ export const fetchProfile = createAsyncThunk(
   'profile/fetchProfile',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('/api/user/profile');
+      const response = await axiosInstance.get('/api/user/profile');
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || 'Failed to fetch profile');
@@ -27,7 +27,7 @@ export const updateProfile = createAsyncThunk(
   'profile/updateProfile',
   async (profileData, { rejectWithValue }) => {
     try {
-      const response = await axios.put('/api/user/profile', profileData, {
+      const response = await axiosInstance.put('/api/user/profile', profileData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

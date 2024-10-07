@@ -1,7 +1,7 @@
 // recipesSlice.js
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
+import axiosInstance from '../../../utils/axiosInstance';
 
 /**
  * Thunk action to fetch the user's saved recipes from the backend.
@@ -10,7 +10,7 @@ export const fetchMyRecipes = createAsyncThunk(
   'recipes/fetchMyRecipes',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get('/api/recipes/my');
+      const response = await axiosInstance.get('/api/recipes/my');
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || 'Failed to fetch your recipes');
@@ -26,7 +26,7 @@ export const searchRecipes = createAsyncThunk(
   'recipes/searchRecipes',
   async (filters, { rejectWithValue }) => {
     try {
-      const response = await axios.get('/api/recipes/search', { params: filters });
+      const response = await axiosInstance.get('/api/recipes/search', { params: filters });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || 'Failed to search recipes');
@@ -42,7 +42,7 @@ export const saveRecipe = createAsyncThunk(
   'recipes/saveRecipe',
   async (recipe, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/recipes', recipe);
+      const response = await axiosInstance.post('/api/recipes', recipe);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message || 'Failed to save recipe');

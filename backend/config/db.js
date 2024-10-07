@@ -9,9 +9,10 @@ require('dotenv').config();
  */
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false, // Disable SSL for local development
+  /*ssl: {
     rejectUnauthorized: false, // Adjust based on your environment
-  },
+  },*/
 });
 
 module.exports = pool;
