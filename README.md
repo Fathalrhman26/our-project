@@ -149,15 +149,8 @@ Our application seeks to revolutionize meal planning by integrating advanced AI 
    npm install
    ```
 
-3. **Configure Environment Variables:**
 
-   Create a `.env` file in the `frontend` directory:
-
-   ```env
-   REACT_APP_API_BASE_URL=http://localhost:5000/api
-   ```
-
-4. **Start the Frontend Application:**
+3. **Start the Frontend Application:**
 
    ```bash
    npm start
