@@ -112,13 +112,13 @@ Our application seeks to revolutionize meal planning by integrating advanced AI 
    Create a `.env` file in the `backend` directory based on the provided `.env.sample`:
 
    ```env
-   PORT=5000
-   DATABASE_URL=postgres://postgres:332211@localhost:5432/meal-plan
-   JWT_SECRET=YourStrongJWTSecretKeyHere123!
-   OPENAI_API_KEY=sk-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+   PORT=your port
+   DATABASE_URL=postgres://username:password@localhost:gate/database_name
+   JWT_SECRET=YourStrongJWTKey
+   OPENAI_API_KEY= Your_OPENAI_API_KEY
    EDAMAM_APP_ID=your_edamam_app_id
    EDAMAM_APP_KEY=your_edamam_app_key
-   YOUTUBE_API_KEY=AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+   YOUTUBE_API_KEY= Your_YOUTUBE_API_KEY
    ```
 
 4. **Run Database Migrations:**
