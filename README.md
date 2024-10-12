@@ -14,7 +14,6 @@
 
 Welcome to our **AI-Based Recipe and Meal Planning**, a sophisticated mobile application crafted to transform the way you plan and prepare your meals. our app delivers personalized meal plans and recipe suggestions tailored to your unique dietary preferences and restrictions. This project represents the culmination of our Bachelor of Science in Honors in Software Engineering graduation endeavor.
 
-
 ## Contributing
 
 **Note:** Currently, this project is not accepting external contributions as it is undergoing its final development and evaluation phase. Post-defense, we may consider open-sourcing the project, at which point contributions will be welcome. Stay tuned for updates!
